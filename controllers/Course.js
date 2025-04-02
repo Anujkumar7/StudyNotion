@@ -103,6 +103,7 @@ exports.showAllCourses = async (req, res) => {
         
 
     }
+
     catch(error){
         console.log(error);
         return res.status(500).json({
@@ -111,3 +112,4 @@ exports.showAllCourses = async (req, res) => {
             error: error.message,
         });
     }
+}
