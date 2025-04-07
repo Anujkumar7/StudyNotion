@@ -1,105 +1,88 @@
-const Profile = require('../models/Profile');
-const User = require('../models/User');
-
-
+const Profile = require("../models/Profile");
+const User = require("../models/User");
+const { uploadImageToCloudinary } = require("../utils/imageUploader");
+// Method for updating a profile
 exports.updateProfile = async (req, res) => {
-    try {
-        // Get data
-        const {dateOfBirth="", about="", contactNumber, gender} = req.body;
-        // Get user ID
-        const id = req.user.id;
-        // Validate data
-        if (!contactNumber || !gender || !id) {
-            return res.status(400).json({
-                success: false,
-                message: "Please fill all fields.",
-            });
-        }
-        // Find profile 
-        const userDetails = await User.findById(id);
-        const profileId = userDetails.additionalDetails;
-        const profileDetails = await Profile.findById(profileId);
+	try {
+		const { dateOfBirth = "", about = "", contactNumber } = req.body;
+		const id = req.user.id;
 
-        // update profile
-        profileDetails.dateOfBirth = dateOfBirth;
-        profileDetails.about = about;
-        profileDetails.gender = gender;
-        profileDetails.contactNumber = contactNumber;
-        // New way of saving data in MongoDB without using create function we use save function
-        // when we kbnow that the object is already created in the db and we just need to update it
-        // and not create a new one so we use .save() function
-        await profileDetails.save();
-        // Rerturn response
-        return res.status(200).json({
-            success: true,
-            message: "Profile updated successfully.",
-            profileDetails,
-        });
+		// Find the profile by id
+		const userDetails = await User.findById(id);
+		const profile = await Profile.findById(userDetails.additionalDetails);
 
-    }
-    catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error.message,
-        });
-    }
+		// Update the profile fields
+		profile.dateOfBirth = dateOfBirth;
+		profile.about = about;
+		profile.contactNumber = contactNumber;
+
+		// Save the updated profile
+		await profile.save();
+
+		return res.json({
+			success: true,
+			message: "Profile updated successfully",
+			profile,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			success: false,
+			error: error.message,
+		});
+	}
 };
 
-// Delete profile account
-// Explore-> how can we schedule this deletion operation 
 exports.deleteAccount = async (req, res) => {
-    try{
-        // Get id
-        const id = req.user.id;
-        // Validate data
-        const userDetails = await User.findById(id);
-        if(!userDetails){
-            return res.status(404).json({
-                success:false,
-                message: "User not found.",
-            });
-        }
-        // Delete profile
-        await Profile.findByIdAndDelete({_id:userDetails.additionalDetails});
-        // TODO: unenroll uyser from all enrolled courses
-        // Delete user
-        await User.findByIdAndDelete({_id:id});
-        // Return response
-        return res.status(200).json({
-            success:true,
-            message: "Account deleted successfully.",
-        });
-
-    }
-    catch(error){
-        return res.status(500).json({
-            success:false,
-            message: "Internal server error",
-            error: error.message,
-        });
-    }
+	try {
+		// TODO: Find More on Job Schedule
+		// const job = schedule.scheduleJob("10 * * * * *", function () {
+		// 	console.log("The answer to life, the universe, and everything!");
+		// });
+		// console.log(job);
+		const id = req.user.id;
+		const user = await User.findById({ _id: id });
+		if (!user) {
+			return res.status(404).json({
+				success: false,
+				message: "User not found",
+			});
+		}
+		// Delete Assosiated Profile with the User
+		await Profile.findByIdAndDelete({ _id: user.userDetails });
+		// TODO: Unenroll User From All the Enrolled Courses
+		// Now Delete User
+		await user.findByIdAndDelete({ _id: id });
+		res.status(200).json({
+			success: true,
+			message: "User deleted successfully",
+		});
+	} catch (error) {
+		console.log(error);
+		res
+			.status(500)
+			.json({ success: false, message: "User Cannot be deleted successfully" });
+	}
 };
 
-// To get all user details
 exports.getAllUserDetails = async (req, res) => {
-    try{
-        // Get id
-        const id = req.user.id;
-        // Validation and get user details
-        const userDetails = await User.findById(id).populate("additionalDetails");
-        
-        // return res
-         return res.status(200).json({
-            success:true,
-            message: "User details fetched successfully.",
-            userDetails,
-        });
-
-    }
-    catch(error){
-        return res.status(500).json({
-            success:false,
-            message: error.message ,
-        });
-    }
+	try {
+		const id = req.user.id;
+		const userDetails = await User.findById(id)
+			.populate("additionalDetails")
+			.exec();
+		console.log(userDetails);
+		res.status(200).json({
+			success: true,
+			message: "User Data fetched successfully",
+			data: userDetails,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
 };
+
+//updateDisplayPicture
