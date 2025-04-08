@@ -2,6 +2,7 @@ const Course = require("../models/Course");
 const Category = require("../models/Category");
 const User = require("../models/User");
 const { uploadImageToCloudinary } = require("../utils/imageUploader");
+const { default: subscriptions } = require("razorpay/dist/types/subscriptions");
 // Function to create a new course
 exports.createCourse = async (req, res) => {
 	try {
@@ -150,3 +151,50 @@ exports.getAllCourses = async (req, res) => {
 };
 
 //getCourseDetails
+exports.getCourseDetails = async (req, res) => {
+	try{
+		// Get the course ID from the request body
+		const {courseId} = req.body;
+		// Find course details
+		const courseDetails = await Course.findById(
+			   		   		        {_id:courseId})
+									.populate(
+										{
+											path: "instructor",
+											populate:{
+												path:"additionalDetails",
+											},
+										}
+									)
+									.populate("cateogory")
+									.populate("ratingAndReviews")
+									.populate({
+										path:"courseContent",
+										populate:{
+											path:"subSection",
+										},
+									})
+									.exec();
+			// Validation
+			if(!courseDetails){
+				return res.status(400).json({
+					success: false,
+					message: `Could not find the course with ${courseId}`,
+				});
+			}
+			return res.status(200).json({
+				success: true,
+				message:"Course Details Fetched Successfully",
+				data: courseDetails,
+			});
+
+	}
+	catch(error){
+		console.log(error);
+		return res.status(500).json({
+			success: false,
+			message: `Error in Fetching Course Details`,
+			error: error.message,
+		});
+	}
+}
