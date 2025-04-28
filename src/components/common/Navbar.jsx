@@ -63,57 +63,58 @@ const Navbar = () => {
 
         {/* Nav Links */}
         <nav>
-            <ul className='flex gap-x-6 text-richblack-25'>
-            {
-                NavbarLinks.map((link, index) => (
-                    <li key={index}>
-                        {
-                            link.title === "Catalog" ? (
-                                <div className='relative flex items-center gap-2 group'>
-                                    <p>{link.title}</p>
-                                    <IoIosArrowDropdownCircle/>
+        <ul className='flex gap-x-6 text-richblack-25'>
+        {
+            NavbarLinks.map( (link, index) => (
+                 <li key={index}>
+                    {
+                        link.title === "Catalog" ? (
+                            <div className='relative flex items-center gap-2 group'>
+                                <p>{link.title}</p>
+                                <IoIosArrowDropdownCircle/>
 
-                                    <div className='invisible absolute left-[50%]
-                                    translate-x-[-50%] translate-y-[60%] top-[50%]
-                                    flex flex-col rounded-md bg-richblack-5 p-4 text-richblack-900
-                                    opacity-0 transition-all duration-200 group-hover:visible 
-                                    group-hover:opacity-100 lg:w-[300px] '>
+                                <div className='invisible absolute left-[50%]
+                                    translate-x-[-50%] translate-y-[80%]
+                                 top-[50%]
+                                flex flex-col rounded-md bg-richblack-5 p-4 text-richblack-900
+                                opacity-0 transition-all duration-200 group-hover:visible
+                                group-hover:opacity-100 lg:w-[300px]'>
 
-                                        <div className='absolute left-[50%] top-0
-                                        translate-x-[80%] translate-y-[-45%] h-6 w-6 rotate-45 rounded
-                                        bg-richblack-5'>
-                                        
-                                        {
-                                            subLinks.length ? (
-                                                    subLinks.map( (subLink, index) => ( 
-                                                        <Link to={`${subLink.link}`} key={index}>
-                                                            <p>{subLink.title}</p>
-                                                        </Link>
-                                                    ) )
-                                                
-                                            ) : (<div></div>)
-                                        }
-                                        </div>
+                                <div className='absolute left-[50%] top-0
+                                translate-x-[80%]
+                                translate-y-[-45%] h-6 w-6 rotate-45 rounded bg-richblack-5'>
+                                </div>
 
-                                    </div>
-
+                                {
+                                    subLinks.length ? (
+                                            subLinks.map( (subLink, index) => (
+                                                <Link to={`${subLink.link}`} key={index}>
+                                                    <p>{subLink.title}</p>
+                                                </Link>
+                                            ) )
+                                    ) : (<div></div>)
+                                }
 
                                 </div>
-                            ) : (
-                            // (?.) meaning object chaining- nahi mila agar path to undefined return karega not error 
-                                <Link to ={link?.path}>
-                                    <p className= {`${matchRoute(link?.path) ? "text-yellow-25" :
-                                        "text-richblack-25"}`}>
-                                        {link.title}
-                                    </p>
-                                </Link>
-                            )
-                        }
-                    </li>
-                ))
-            }
-            </ul>
-        </nav>
+
+
+                            </div>
+
+                        ) : (
+                            <Link to={link?.path}>
+                                <p className={`${ matchRoute(link?.path) ? "text-yellow-25" : "text-richblack-25"}`}>
+                                    {link.title}
+                                </p>
+                                
+                            </Link>
+                        )
+                    }
+                </li>
+             ) )
+        }
+
+        </ul>
+      </nav>
 
         {/* Login/Signup Dashboard */}
         <div className='flex gap-x-4 items-center'>
