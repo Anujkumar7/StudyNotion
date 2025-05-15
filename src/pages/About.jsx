@@ -8,6 +8,7 @@ import FoundingStory from '../assets/Images/FoundingStory.png'
 import StatsComponent from '../components/core/AboutPage/Stats'
 import LearningGrid from '../components/core/AboutPage/LearningGrid'
 import ContactFormSection from '../components/core/AboutPage/ContactFormSection'
+import Footer from "../components/common/Footer"
 
 const About = () => {
   return (
@@ -81,10 +82,19 @@ const About = () => {
       <StatsComponent/>
 
       {/* Section 5 */}
-      <section>
+      <section className='mx-auto flex flex-col items-center justify-between gap-5 mb-[140px]'>
         <LearningGrid/>
         <ContactFormSection/>
       </section>
+
+      <section>
+        <div>
+          Reviews from other learners
+          {/* <ReviewSlider/> */}
+        </div>
+      </section>
+
+      <Footer/>
 
     </div>
   )
